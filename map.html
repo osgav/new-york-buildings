@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+  <title>Networks of New York (Building Map)</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <link rel="stylesheet" href="leaflet-1.9.3/leaflet.css" 
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+    crossorigin="" />
+  <script type="text/javascript" src="leaflet-1.9.3/leaflet.js"
+    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+    crossorigin=""></script>
+
+  <script type="text/javascript" src="script.js" defer></script>
+  <script type="text/javascript" src="data.js"></script>
+</head>
+
+<body>
+
+  <h1>Networks of New York</h1>
+
+  <div class="container">
+
+    <div class="left">
+      <div id="map" class="map"></div>
+      <p><b>CARRIER HOTELS AND DATA CENTERS: ARCHITECTURE FOR THE INTERNET</b></p>
+      <p>these buildings are the ones described in the "Ground Level" section of 
+      <a href="https://everything.happens.horse/@ingrid" target="_blank">Ingrid Burrington</a>'s 
+      <a href="https://mhpbooks.com/books/networks-of-new-york/" target="_blank">book</a>: 
+      <a href="https://web.archive.org/web/20150222143941/http://seeingnetworks.in/nyc/" target="_blank">Networks of New York</a>
+      </p>
+    </div>
+
+    <div class="right">
+      <button onclick="zoomToStart()">reset map</button>
+      <p><b>Building Details</b></p>
+      <div id="building-address" class="stats"></div>
+    </div>
+
+  </div>
+
+</body>
+</html>
+
