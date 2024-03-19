@@ -10,8 +10,7 @@ function zoomToStart() {
   //map.flyTo([40.723, -74.000], 14.35);
   // flying makes many more tile requests
   map.setView([40.723, -74.000], 14.35);
-  clearAddress();
-  buildings.resetStyle();
+  if (buildingIsSelected) { deselectBuilding(); }
 }
 
 let tileUrl = `https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.png`;
@@ -61,10 +60,7 @@ function panToFeature(e) {
 let buildingIsSelected = false;
 
 function toggleBuildingSelection(e) {
-  //buildings.resetStyle();
   targetBuildingOsmId = e.target.feature.properties.osm_id;
-  //updateAddress(targetBuildingOsmId);
-
   // https://stackoverflow.com/questions/25773389/changing-the-style-of-each-feature-in-a-leaflet-geojson-layer
   buildings.eachLayer(function(featureInstanceLayer) {
     featureOsmId = featureInstanceLayer.feature.properties.osm_id;
@@ -106,13 +102,10 @@ function getDistancesFromSelectedBuilding(osmId) {
                                    "centroid": layer.getBounds().getCenter()});
     }
   });
-  //console.log(selectedBuildingCentroid);
-  //console.log(otherBuildingCentroids);
   let distancesFromSelectedBuilding = otherBuildingCentroids.map(d => ({
     "osm_id": d.osm_id,
     "distance_metres": map.distance(selectedBuildingCentroid, d.centroid)
   }));
-  //console.log(distancesFromSelectedBuilding);
   distancesFromSelectedBuilding.map(d => console.log(`${d.osm_id} is ${d.distance_metres} away`));
 }
 
