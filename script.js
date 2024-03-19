@@ -68,10 +68,11 @@ function toggleBuildingSelection(e) {
       deselectBuilding();
     } else if (featureOsmId == targetBuildingOsmId) {
       selectBuilding(targetBuildingOsmId, featureInstanceLayer);
+      panToFeature(e);
     }
   });
   //zoomToFeature(e);
-  panToFeature(e);
+  //panToFeature(e);
 
 }
 
@@ -79,13 +80,14 @@ function selectBuilding(osmId, feature) {
   buildingIsSelected = true;
   feature.setStyle({fillColor:"#ff00ff"});
   updateAddress(osmId);
-  getDistancesFromSelectedBuilding(osmId);
+  updateDistances(osmId);
 }
 
 function deselectBuilding() {
   buildingIsSelected = false;
   buildings.resetStyle();
   clearAddress();
+  clearDistances();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,13 +108,47 @@ function getDistancesFromSelectedBuilding(osmId) {
     "osm_id": d.osm_id,
     "distance_metres": map.distance(selectedBuildingCentroid, d.centroid)
   }));
-  distancesFromSelectedBuilding.map(d => console.log(`${d.osm_id} is ${d.distance_metres} away`));
+  return distancesFromSelectedBuilding;
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+// display distances between buildings
+//
+function updateDistances(osmId) {
+  clearDistances();
+  let distances = getDistancesFromSelectedBuilding(osmId);
+  let entries = [];
+  for (building of distances) {
+    let address = constructAddress(building.osm_id);
+    const addressDistanceEntry = document.createElement("div");
+    addressDistanceEntry.classList.add("stats");
+    const addressPara = constructAddressPara(address);
+    const addressDistance = document.createElement("p")
+    let distance_miles = convertDistanceToMiles(building.distance_metres);
+    addressDistance.textContent = `${distance_miles} miles away`;
+    addressDistanceEntry.appendChild(addressPara);
+    addressDistanceEntry.appendChild(addressDistance);
+    entries.push(addressDistanceEntry);
+  }
+  const addressDistancesBox = document.getElementById("building-distances");
+  for (entry of entries) {
+    addressDistancesBox.appendChild(entry);
+  }
+}
 
+function clearDistances() {
+  const addressDistancesBox = document.getElementById("building-distances");
+  while (addressDistancesBox.firstChild) {
+    addressDistancesBox.removeChild(addressDistancesBox.firstChild);
+  }
+}
 
-
+function convertDistanceToMiles(metres) {
+  // https://www.unitconverters.net/length/km-to-miles.htm
+  // 1 kilometre = 0.6214 miles
+  return ((metres / 1000) * 0.6214).toFixed(2);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -202,6 +238,12 @@ function clearAddress () {
 function updateAddress(osm_id) {
   clearAddress();
   let address = constructAddress(osm_id);
+  const addressBox = document.getElementById("building-address");
+  const addressPara = constructAddressPara(address);
+  addressBox.appendChild(addressPara);
+}
+
+function constructAddressPara(address) {
   let addressString = "";
 
   if (address.addressLine1) {
@@ -224,11 +266,12 @@ function updateAddress(osm_id) {
     addressString += address.zip;
   }
 
-  const addressBox = document.getElementById("building-address");
   const addressPara = document.createElement("p");
   addressPara.innerHTML = addressString;
-  addressBox.appendChild(addressPara);
+  return addressPara;
 }
+
+
 
 function constructAddress(osm_id) {
   // return an object with keys:
