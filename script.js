@@ -83,6 +83,7 @@ function selectBuilding(osmId, feature) {
   buildingIsSelected = true;
   feature.setStyle({fillColor:"#ff00ff"});
   updateAddress(osmId);
+  getDistancesFromSelectedBuilding(osmId);
 }
 
 function deselectBuilding() {
@@ -91,7 +92,39 @@ function deselectBuilding() {
   clearAddress();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// calculate distances between buildings
+//
+function getDistancesFromSelectedBuilding(osmId) {
+  let selectedBuildingCentroid =  null;
+  let otherBuildingCentroids = [];
+  buildings.eachLayer(layer => {
+    if (layer.feature.properties.osm_id == osmId) {
+      selectedBuildingCentroid = layer.getBounds().getCenter();
+    } else {
+      otherBuildingCentroids.push({"osm_id": layer.feature.properties.osm_id,
+                                   "centroid": layer.getBounds().getCenter()});
+    }
+  });
+  //console.log(selectedBuildingCentroid);
+  //console.log(otherBuildingCentroids);
+  let distancesFromSelectedBuilding = otherBuildingCentroids.map(d => ({
+    "osm_id": d.osm_id,
+    "distance_metres": map.distance(selectedBuildingCentroid, d.centroid)
+  }));
+  //console.log(distancesFromSelectedBuilding);
+  distancesFromSelectedBuilding.map(d => console.log(`${d.osm_id} is ${d.distance_metres} away`));
+}
 
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// building hover effects
+//
 function highlightFeature(e) {
   const bbox = e.target.getBounds();
   bbox_layer = L.rectangle(bbox);
@@ -141,6 +174,9 @@ function resetHighlight(e) {
   map.removeLayer(line_bottom);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// load building data
+//
 const buildings = L.geoJson(datacenters_carrier_hotels, {
   style,
   onEachFeature
