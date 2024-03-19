@@ -37,7 +37,7 @@ function style(feature) {
 
 function onEachFeature(feature, layer) {
   layer.on({
-    click: selectBuilding,
+    click: toggleBuildingSelection,
     mouseover: highlightFeature,
     mouseout: resetHighlight
   });
@@ -54,21 +54,43 @@ function panToFeature(e) {
   map.setView(e.target.getBounds().getCenter());
 }
 
-function selectBuilding(e) {
-  buildings.resetStyle();
-  selectedBuildingOsmId = e.target.feature.properties.osm_id;
-  updateAddress(selectedBuildingOsmId);
+
+////////////////////////////////////////////////////////////////////////////////
+// building selection functionality
+//
+let buildingIsSelected = false;
+
+function toggleBuildingSelection(e) {
+  //buildings.resetStyle();
+  targetBuildingOsmId = e.target.feature.properties.osm_id;
+  //updateAddress(targetBuildingOsmId);
+
   // https://stackoverflow.com/questions/25773389/changing-the-style-of-each-feature-in-a-leaflet-geojson-layer
   buildings.eachLayer(function(featureInstanceLayer) {
     featureOsmId = featureInstanceLayer.feature.properties.osm_id;
-    if (featureOsmId == selectedBuildingOsmId) {
-      featureInstanceLayer.setStyle({fillColor:"#ff00ff"});
+    if (featureOsmId == targetBuildingOsmId && buildingIsSelected) {
+      deselectBuilding();
+    } else if (featureOsmId == targetBuildingOsmId) {
+      selectBuilding(targetBuildingOsmId, featureInstanceLayer);
     }
   });
   //zoomToFeature(e);
   panToFeature(e);
 
 }
+
+function selectBuilding(osmId, feature) {
+  buildingIsSelected = true;
+  feature.setStyle({fillColor:"#ff00ff"});
+  updateAddress(osmId);
+}
+
+function deselectBuilding() {
+  buildingIsSelected = false;
+  buildings.resetStyle();
+  clearAddress();
+}
+
 
 function highlightFeature(e) {
   const bbox = e.target.getBounds();
