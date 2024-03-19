@@ -11,6 +11,7 @@ function zoomToStart() {
   // flying makes many more tile requests
   map.setView([40.723, -74.000], 14.35);
   clearAddress();
+  buildings.resetStyle();
 }
 
 let tileUrl = `https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}.png`;
@@ -36,7 +37,7 @@ function style(feature) {
 
 function onEachFeature(feature, layer) {
   layer.on({
-    click: zoomToFeature,
+    click: selectBuilding,
     mouseover: highlightFeature,
     mouseout: resetHighlight
   });
@@ -47,6 +48,26 @@ function zoomToFeature(e) {
   // flying makes many more tile requests
   map.fitBounds(e.target.getBounds());
   updateAddress(e.target.feature.properties.osm_id);
+}
+
+function panToFeature(e) {
+  map.setView(e.target.getBounds().getCenter());
+}
+
+function selectBuilding(e) {
+  buildings.resetStyle();
+  selectedBuildingOsmId = e.target.feature.properties.osm_id;
+  updateAddress(selectedBuildingOsmId);
+  // https://stackoverflow.com/questions/25773389/changing-the-style-of-each-feature-in-a-leaflet-geojson-layer
+  buildings.eachLayer(function(featureInstanceLayer) {
+    featureOsmId = featureInstanceLayer.feature.properties.osm_id;
+    if (featureOsmId == selectedBuildingOsmId) {
+      featureInstanceLayer.setStyle({fillColor:"#ff00ff"});
+    }
+  });
+  //zoomToFeature(e);
+  panToFeature(e);
+
 }
 
 function highlightFeature(e) {
