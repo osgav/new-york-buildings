@@ -68,7 +68,7 @@ function toggleBuildingSelection(e) {
       deselectBuilding();
     } else if (featureOsmId == targetBuildingOsmId) {
       selectBuilding(targetBuildingOsmId, featureInstanceLayer);
-      panToFeature(e);
+      //panToFeature(e);
     }
   });
   //zoomToFeature(e);
@@ -217,6 +217,57 @@ selectedBuildingAddress.addEventListener("mouseenter", e => {
 selectedBuildingAddress.addEventListener("mouseleave", e => {
   selectedBuildingAddress.classList.remove("highlight");
 });
+
+
+const addressList = document.getElementById("building-distances");
+
+addressList.addEventListener("mouseover", e => {
+  let target = e.target;
+  if (target.classList.contains("stats")) {
+    target.classList.add("highlight");
+    let osmIdSelected = target.dataset.osmIdSelected;
+    let osmIdOther = target.dataset.osmIdOther;
+    addLineBetweenBuildings(osmIdSelected, osmIdOther);
+  }
+  if (target.parentElement.classList.contains("stats")) {
+    target.parentElement.classList.add("highlight");
+    let osmIdSelected = target.parentElement.dataset.osmIdSelected;
+    let osmIdOther = target.parentElement.dataset.osmIdOther;
+    addLineBetweenBuildings(osmIdSelected, osmIdOther);
+  }
+});
+
+addressList.addEventListener("mouseout", e => {
+  let target = e.target;
+  if (target.classList.contains("stats")) {
+    target.classList.remove("highlight");
+    removeLineBetweenBuildings();
+  }
+  if (target.parentElement.classList.contains("stats")) {
+    target.parentElement.classList.remove("highlight");
+    removeLineBetweenBuildings();
+  }
+});
+
+function addLineBetweenBuildings(sourceOsmId, destinationOsmId) {
+  let sourceCentroid = getBuildingCentroid(sourceOsmId);
+  let destinationCentroid = getBuildingCentroid(destinationOsmId);
+  line = L.polyline([sourceCentroid, destinationCentroid], {color: '#000000', weight: 4}).addTo(map);
+}
+
+function removeLineBetweenBuildings() {
+  map.removeLayer(line);
+}
+
+function getBuildingCentroid(osmId) {
+  let buildingCentroid = null;
+  buildings.eachLayer(layer => {
+    if (layer.feature.properties.osm_id == osmId) {
+      buildingCentroid = layer.getBounds().getCenter();
+    }
+  });
+  return buildingCentroid;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
