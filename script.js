@@ -105,7 +105,8 @@ function getDistancesFromSelectedBuilding(osmId) {
     }
   });
   let distancesFromSelectedBuilding = otherBuildingCentroids.map(d => ({
-    "osm_id": d.osm_id,
+    "osm_id_selected": osmId,
+    "osm_id_other": d.osm_id,
     "distance_metres": map.distance(selectedBuildingCentroid, d.centroid)
   }));
   return distancesFromSelectedBuilding;
@@ -120,9 +121,11 @@ function updateDistances(osmId) {
   let distances = getDistancesFromSelectedBuilding(osmId);
   let entries = [];
   for (building of distances) {
-    let address = constructAddress(building.osm_id);
+    let address = constructAddress(building.osm_id_other);
     const addressDistanceEntry = document.createElement("div");
     addressDistanceEntry.classList.add("stats");
+    addressDistanceEntry.dataset.osmIdSelected = building.osm_id_selected;
+    addressDistanceEntry.dataset.osmIdOther = building.osm_id_other;
     const addressPara = constructAddressPara(address);
     const addressDistance = document.createElement("p")
     let distance_miles = convertDistanceToMiles(building.distance_metres);
