@@ -253,6 +253,7 @@ function addLineBetweenBuildings(sourceOsmId, destinationOsmId) {
   let sourceCentroid = getBuildingCentroid(sourceOsmId);
   let destinationCentroid = getBuildingCentroid(destinationOsmId);
   line = L.polyline([sourceCentroid, destinationCentroid], {color: '#000000', weight: 4}).addTo(map);
+  line.bringToBack();
 }
 
 function removeLineBetweenBuildings() {
