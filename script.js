@@ -284,9 +284,9 @@ function addCircleAroundBuilding(osmId) {
   let buildingCentroid = getBuildingCentroid(osmId);
   circleOuter = L.circle(buildingCentroid, {
     radius: 100,
-    stroke: false,
-    fillColor: "#faa627",
-    fillOpacity: 0.6
+    fill: false,
+    color: "#faa627",
+    weight: 5
   }).addTo(map);
   circleOuter.bringToBack();
 }
