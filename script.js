@@ -112,6 +112,12 @@ function getDistancesFromSelectedBuilding(osmId) {
   return distancesFromSelectedBuilding;
 }
 
+function convertDistanceToMiles(metres) {
+  // https://www.unitconverters.net/length/km-to-miles.htm
+  // 1 kilometre = 0.6214 miles
+  return ((metres / 1000) * 0.6214).toFixed(2);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // display distances between buildings
@@ -145,12 +151,6 @@ function clearDistances() {
   while (addressDistancesBox.firstChild) {
     addressDistancesBox.removeChild(addressDistancesBox.firstChild);
   }
-}
-
-function convertDistanceToMiles(metres) {
-  // https://www.unitconverters.net/length/km-to-miles.htm
-  // 1 kilometre = 0.6214 miles
-  return ((metres / 1000) * 0.6214).toFixed(2);
 }
 
 
@@ -254,10 +254,21 @@ function addLineBetweenBuildings(sourceOsmId, destinationOsmId) {
   let destinationCentroid = getBuildingCentroid(destinationOsmId);
   line = L.polyline([sourceCentroid, destinationCentroid], {color: '#000000', weight: 4}).addTo(map);
   line.bringToBack();
+
+  let distances = getDistancesFromSelectedBuilding(sourceOsmId);
+  let distanceToDestination = distances.filter(d => d.osm_id_other == destinationOsmId);
+  let distance_metres = distanceToDestination[0].distance_metres;
+  let distance_miles = convertDistanceToMiles(distance_metres);
+  tooltip = L.tooltip(destinationCentroid, {
+    content: `${distance_miles} miles`,
+    direction: "bottom",
+    offset: [0, 10]
+  }).addTo(map);
 }
 
 function removeLineBetweenBuildings() {
   map.removeLayer(line);
+  map.removeLayer(tooltip);
 }
 
 function getBuildingCentroid(osmId) {
