@@ -228,12 +228,14 @@ addressList.addEventListener("mouseover", e => {
     let osmIdSelected = target.dataset.osmIdSelected;
     let osmIdOther = target.dataset.osmIdOther;
     addLineBetweenBuildings(osmIdSelected, osmIdOther);
+    addCircleAroundBuilding(osmIdOther);
   }
   if (target.parentElement.classList.contains("stats")) {
     target.parentElement.classList.add("highlight-other");
     let osmIdSelected = target.parentElement.dataset.osmIdSelected;
     let osmIdOther = target.parentElement.dataset.osmIdOther;
     addLineBetweenBuildings(osmIdSelected, osmIdOther);
+    addCircleAroundBuilding(osmIdOther);
   }
 });
 
@@ -242,10 +244,12 @@ addressList.addEventListener("mouseout", e => {
   if (target.classList.contains("stats")) {
     target.classList.remove("highlight-other");
     removeLineBetweenBuildings();
+    removeCircleAroundBuilding();
   }
   if (target.parentElement.classList.contains("stats")) {
     target.parentElement.classList.remove("highlight-other");
     removeLineBetweenBuildings();
+    removeCircleAroundBuilding();
   }
 });
 
@@ -274,6 +278,21 @@ function removeLineBetweenBuildings() {
   map.removeLayer(lineCenter);
   map.removeLayer(lineEdges);
   map.removeLayer(tooltip);
+}
+
+function addCircleAroundBuilding(osmId) {
+  let buildingCentroid = getBuildingCentroid(osmId);
+  circleOuter = L.circle(buildingCentroid, {
+    radius: 100,
+    stroke: false,
+    fillColor: "#faa627",
+    fillOpacity: 0.6
+  }).addTo(map);
+  circleOuter.bringToBack();
+}
+
+function removeCircleAroundBuilding() {
+  map.removeLayer(circleOuter);
 }
 
 function getBuildingCentroid(osmId) {
