@@ -39,3 +39,20 @@
 .highlight-other {
   background-color: #FAA627;
 }
+
+.leaflet-tooltip-bottom.distance-map-label::before {
+  border-bottom-color: transparent;
+}
+
+.leaflet-tooltip.distance-map-label {
+  border: none;
+  border-radius: 40px;
+  padding-top: 0;
+  padding-bottom: 0;
+  box-shadow: none;
+  background-color: rgba(250, 166, 39, 1);
+  color: #000000;
+  font-size: 2.5em;
+  font-weight: bold;
+  line-height: 1em;
+}

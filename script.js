@@ -264,7 +264,9 @@ function addLineBetweenBuildings(sourceOsmId, destinationOsmId) {
   tooltip = L.tooltip(destinationCentroid, {
     content: `${distance_miles} miles`,
     direction: "bottom",
-    offset: [0, 10]
+    offset: [0, 10],
+    opacity: 1,
+    className: "distance-map-label"
   }).addTo(map);
 }
 
