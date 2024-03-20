@@ -78,7 +78,7 @@ function toggleBuildingSelection(e) {
 
 function selectBuilding(osmId, feature) {
   buildingIsSelected = true;
-  feature.setStyle({fillColor:"#ff00ff"});
+  feature.setStyle({fillColor:"#9abac9"});
   updateAddress(osmId);
   updateDistances(osmId);
 }
@@ -212,10 +212,10 @@ function resetHighlight(e) {
 //
 const selectedBuildingAddress = document.getElementById("building-address");
 selectedBuildingAddress.addEventListener("mouseenter", e => {
-  selectedBuildingAddress.classList.add("highlight");
+  selectedBuildingAddress.classList.add("highlight-selected");
 });
 selectedBuildingAddress.addEventListener("mouseleave", e => {
-  selectedBuildingAddress.classList.remove("highlight");
+  selectedBuildingAddress.classList.remove("highlight-selected");
 });
 
 
@@ -224,13 +224,13 @@ const addressList = document.getElementById("building-distances");
 addressList.addEventListener("mouseover", e => {
   let target = e.target;
   if (target.classList.contains("stats")) {
-    target.classList.add("highlight");
+    target.classList.add("highlight-other");
     let osmIdSelected = target.dataset.osmIdSelected;
     let osmIdOther = target.dataset.osmIdOther;
     addLineBetweenBuildings(osmIdSelected, osmIdOther);
   }
   if (target.parentElement.classList.contains("stats")) {
-    target.parentElement.classList.add("highlight");
+    target.parentElement.classList.add("highlight-other");
     let osmIdSelected = target.parentElement.dataset.osmIdSelected;
     let osmIdOther = target.parentElement.dataset.osmIdOther;
     addLineBetweenBuildings(osmIdSelected, osmIdOther);
@@ -240,11 +240,11 @@ addressList.addEventListener("mouseover", e => {
 addressList.addEventListener("mouseout", e => {
   let target = e.target;
   if (target.classList.contains("stats")) {
-    target.classList.remove("highlight");
+    target.classList.remove("highlight-other");
     removeLineBetweenBuildings();
   }
   if (target.parentElement.classList.contains("stats")) {
-    target.parentElement.classList.remove("highlight");
+    target.parentElement.classList.remove("highlight-other");
     removeLineBetweenBuildings();
   }
 });
@@ -252,8 +252,10 @@ addressList.addEventListener("mouseout", e => {
 function addLineBetweenBuildings(sourceOsmId, destinationOsmId) {
   let sourceCentroid = getBuildingCentroid(sourceOsmId);
   let destinationCentroid = getBuildingCentroid(destinationOsmId);
-  line = L.polyline([sourceCentroid, destinationCentroid], {color: '#000000', weight: 4}).addTo(map);
-  line.bringToBack();
+  lineCenter = L.polyline([sourceCentroid, destinationCentroid], {color: '#000000', weight: 4}).addTo(map);
+  lineCenter.bringToBack();
+  lineEdges = L.polyline([sourceCentroid, destinationCentroid], {color: '#9abac9', weight: 8}).addTo(map);
+  lineEdges.bringToBack();
 
   let distances = getDistancesFromSelectedBuilding(sourceOsmId);
   let distanceToDestination = distances.filter(d => d.osm_id_other == destinationOsmId);
@@ -267,7 +269,8 @@ function addLineBetweenBuildings(sourceOsmId, destinationOsmId) {
 }
 
 function removeLineBetweenBuildings() {
-  map.removeLayer(line);
+  map.removeLayer(lineCenter);
+  map.removeLayer(lineEdges);
   map.removeLayer(tooltip);
 }
 

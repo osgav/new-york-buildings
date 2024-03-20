@@ -32,6 +32,10 @@
   background-color: #ECEAEC;
 }
 
-.highlight {
+.highlight-selected {
+  background-color: #9ABAC9;
+}
+
+.highlight-other {
   background-color: #FAA627;
 }
