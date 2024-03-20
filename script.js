@@ -203,6 +203,19 @@ function resetHighlight(e) {
   map.removeLayer(line_bottom);
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// address hover effects
+//
+const selectedBuildingAddress = document.getElementById("building-address");
+selectedBuildingAddress.addEventListener("mouseenter", e => {
+  selectedBuildingAddress.classList.add("highlight");
+});
+selectedBuildingAddress.addEventListener("mouseleave", e => {
+  selectedBuildingAddress.classList.remove("highlight");
+});
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // load building data
 //
